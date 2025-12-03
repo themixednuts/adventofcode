@@ -37,6 +37,10 @@ impl ProductIdRange {
         let is_palindrome = ProductIdRange::palindrome(n);
         let is_repeating = ProductIdRange::repeating(n);
 
+        if is_repeating {
+            dbg!(&n);
+        }
+
         is_palindrome || is_repeating
     }
 }
