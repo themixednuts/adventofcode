@@ -13,14 +13,13 @@ struct BatteryBank {
 
 impl BatteryBank {
     fn new(batteries: impl Into<Box<[Battery]>>) -> Self {
-        BatteryBank {
-            batteries: batteries.into(),
-        }
+        BatteryBank::from(batteries.into())
     }
 
     fn best_of(&self, n: usize) -> Option<Battery> {
         let len = self.batteries.len();
-        if len < 2 {
+
+        if n > len || len < 2 {
             return None;
         }
 
@@ -140,6 +139,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(3121910778619));
     }
 }
