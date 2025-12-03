@@ -13,7 +13,9 @@ struct BatteryBank {
 
 impl BatteryBank {
     fn new(batteries: impl Into<Box<[Battery]>>) -> Self {
-        BatteryBank::from(batteries.into())
+        BatteryBank {
+            batteries: batteries.into(),
+        }
     }
 
     fn best_of(&self, n: usize) -> Option<Battery> {
@@ -23,23 +25,23 @@ impl BatteryBank {
             return None;
         }
 
-        let slice = &self.batteries[..len - n + 1];
+        let mut result = Battery::new(0);
+        let mut start = 0;
 
-        let mut max = slice.iter().cloned().max()?;
-        let mut idx = slice.iter().position(|&b| b == max)?;
-
-        for i in 1..n {
-            let remaining = n - i;
-            let start = idx + 1;
+        for remaining in (1..=n).rev() {
             let end = len - remaining + 1;
             let slice = &self.batteries[start..end];
 
-            let inner_max = slice.iter().max()?;
-            idx = start + slice.iter().position(|b| b == inner_max)?;
-            max += inner_max;
+            let (local_idx, &max) = slice
+                .iter()
+                .enumerate()
+                .reduce(|(i, a), (j, b)| if b > a { (j, b) } else { (i, a) })?;
+
+            result += &max;
+            start += local_idx + 1;
         }
 
-        Some(max)
+        Some(result)
     }
 }
 
